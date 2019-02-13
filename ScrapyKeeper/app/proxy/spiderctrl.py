@@ -1,11 +1,14 @@
+import ast
 import datetime
 import random
-from functools import reduce
-import requests
 import re
+from functools import reduce
+
+import requests
 
 from ScrapyKeeper.app import db
-from ScrapyKeeper.app.spider.model import SpiderStatus, JobExecution, JobInstance, Project, JobPriority
+from ScrapyKeeper.app.spider.model import (JobExecution, JobInstance,
+                                           JobPriority, Project, SpiderStatus)
 
 
 class SpiderServiceProxy(object):
@@ -102,7 +105,8 @@ class SpiderAgent():
             job_status = spider_service_instance.get_job_list(project.project_name)
             job_execution_list = JobExecution.list_uncomplete_job()
             job_execution_dict = dict(
-                [(job_execution.service_job_execution_id, job_execution) for job_execution in job_execution_list])
+                [(job_execution.service_job_execution_id,
+                  job_execution) for job_execution in job_execution_list])
             # running
             for job_execution_info in job_status[SpiderStatus.RUNNING]:
                 job_execution = job_execution_dict.get(job_execution_info['id'])
@@ -117,7 +121,7 @@ class SpiderAgent():
                     job_execution.start_time = job_execution_info['start_time']
                     job_execution.end_time = job_execution_info['end_time']
                     job_execution.running_status = SpiderStatus.FINISHED
-                    
+
                     res = requests.get(self.log_url(job_execution))
                     res.encoding = 'utf8'
                     raw = res.text[-4096:]
@@ -131,14 +135,27 @@ class SpiderAgent():
     def start_spider(self, job_instance):
         project = Project.find_project_by_id(job_instance.project_id)
         spider_name = job_instance.spider_name
-        #arguments = {}
-        #if job_instance.spider_arguments:
-        #    arguments = dict(map(lambda x: x.split("="), job_instance.spider_arguments.split(",")))
+        # arguments = {}
+        # if job_instance.spider_arguments:
+        #     arguments = dict(map(lambda x: x.split("="),
+        #                          job_instance.spider_arguments.split(",")))
         from collections import defaultdict
         arguments = defaultdict(list)
         if job_instance.spider_arguments:
-            for k, v in list(map(lambda x: x.split('=', 1).strip(), job_instance.spider_arguments.split(','))):
-                arguments[k].append(v)
+            parsed_args = ast.parse(
+                "\n".join(map(lambda x: x.strip(), job_instance.spider_arguments.split(","))))
+            for assign in parsed_args.body:
+                # only num and str values accepts
+                getter = "n" if isinstance(assign.value, ast.Num) else "s"
+                try:
+                    key = assign.targets[0].id
+                    value = str(getattr(assign.value, getter))
+                    arguments[key].append(value)
+                except Exception:
+                    pass
+            # for k, v in map(lambda x: x.split('=', 1).strip(),
+            #                 job_instance.spider_arguments.split(',')):
+            #     arguments[k].append(v)
         threshold = 0
         daemon_size = len(self.spider_service_instances)
         if job_instance.priority == JobPriority.HIGH:
@@ -172,7 +189,8 @@ class SpiderAgent():
         project = Project.find_project_by_id(job_instance.project_id)
         for spider_service_instance in self.spider_service_instances:
             if spider_service_instance.server == job_execution.running_on:
-                if spider_service_instance.cancel_spider(project.project_name, job_execution.service_job_execution_id):
+                if spider_service_instance.cancel_spider(project.project_name,
+                                                         job_execution.service_job_execution_id):
                     job_execution.end_time = datetime.datetime.now()
                     job_execution.running_status = SpiderStatus.CANCELED
                     db.session.commit()
@@ -189,7 +207,8 @@ class SpiderAgent():
         project = Project.find_project_by_id(job_instance.project_id)
         for spider_service_instance in self.spider_service_instances:
             if spider_service_instance.server == job_execution.running_on:
-                return spider_service_instance.log_url(project.project_name, job_instance.spider_name,
+                return spider_service_instance.log_url(project.project_name,
+                                                       job_instance.spider_name,
                                                        job_execution.service_job_execution_id)
 
     @property
