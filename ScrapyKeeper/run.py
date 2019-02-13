@@ -1,3 +1,4 @@
+import ConfigParser
 import logging
 import os
 from optparse import OptionParser
@@ -7,12 +8,18 @@ from ScrapyKeeper.app import app, initialize
 
 def main():
     opts, args = parse_opts(app.config)
+    auth_from_file = {}
+    if opts.auth_file and os.path.exists(opts.auth_file) and os.path.isfile(opts.auth_file):
+        auth_config = ConfigParser.ConfigParser()
+        auth_config.read(opts.auth_file)
+        auth_from_file['username'] = auth_config.get('auth', 'username', opts.username)
+        auth_from_file['password'] = auth_config.get('auth', 'password', opts.password)
     app.config.update(dict(
         SERVER_TYPE=opts.server_type,
         SERVERS=opts.servers or app.config.get('SERVERS'),
         SQLALCHEMY_DATABASE_URI=opts.database_url,
-        BASIC_AUTH_USERNAME=opts.username,
-        BASIC_AUTH_PASSWORD=opts.password,
+        BASIC_AUTH_USERNAME=auth_from_file.get('username', opts.username),
+        BASIC_AUTH_PASSWORD=auth_from_file.get('password', opts.password),
         NO_AUTH=opts.no_auth,
         NO_SENTRY=opts.no_sentry
     ))
@@ -57,6 +64,9 @@ def parse_opts(config):
                       help='ScrapyKeeper metadata database default: %s' % config.get('SQLALCHEMY_DATABASE_URI'),
                       dest='database_url',
                       default=config.get('SQLALCHEMY_DATABASE_URI'))
+    parser.add_option("--auth-file",
+                      help="Get the credentials from a file",
+                      dest='auth_file')
 
     parser.add_option("--no-auth",
                       help="disable basic auth",

@@ -10,3 +10,4 @@ build
 ScrapyKeeper.db
 Pipfile.lock
 .vscode/
+*.auth
