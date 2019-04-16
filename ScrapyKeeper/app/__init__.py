@@ -16,7 +16,9 @@ import ScrapyKeeper
 from ScrapyKeeper import config
 
 # Define the WSGI application object
-app = Flask(__name__)
+static_url_path = "/{}/static".format(config.URL_PREFIX)
+
+app = Flask(__name__, static_url_path=static_url_path)
 # Configurations
 app.config.from_object(config)
 
@@ -30,7 +32,8 @@ app.logger.setLevel(app.config.get('LOG_LEVEL', "INFO"))
 app.logger.addHandler(handler)
 
 # swagger
-api = swagger.docs(Api(app), apiVersion=ScrapyKeeper.__version__, api_spec_url="/api",
+api = swagger.docs(Api(app), apiVersion=ScrapyKeeper.__version__,
+                   api_spec_url="/{}/api".format(config.URL_PREFIX),
                    description='ScrapyKeeper')
 # Define the database object which is imported
 # by modules and controllers
@@ -102,7 +105,7 @@ def regist_server():
 from ScrapyKeeper.app.spider.controller import api_spider_bp
 
 # Register blueprint(s)
-app.register_blueprint(api_spider_bp)
+app.register_blueprint(api_spider_bp, url_prefix=config.URL_PREFIX)
 
 # start sync job status scheduler
 from ScrapyKeeper.app.schedulers.common import sync_job_execution_status_job, sync_spiders, \

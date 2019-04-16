@@ -38,7 +38,7 @@
             {% if job.job_instance %}
             <tr>
                 <td>{{ job.job_execution_id }}</td>
-                <td><a href="/project/{{ project.id }}/job/periodic#{{ job.job_instance_id }}">{{ job.job_instance_id }}</a></td>
+                <td><a href="/{{ base_prefix }}/project/{{ project.id }}/job/periodic#{{ job.job_instance_id }}">{{ job.job_instance_id }}</a></td>
                 <td>{{ job.job_instance.spider_name }}</td>
                 <td class="txt-args" data-toggle="tooltip" data-placement="right"
                     title="{{ job.job_instance.spider_arguments }}">{{ job.job_instance.spider_arguments }}
@@ -87,15 +87,16 @@
                 <th style="width: 20px">Priority</th>
                 <th style="width: 40px">Runtime</th>
                 <th style="width: 120px">Started</th>
+                <th style="width: 40px">Counters</th>
                 <th style="width: 40px">Log</th>
                 <th style="width: 40px">Running On</th>
-                <th style="width: 40px">Action</th>
+                <th style="width: 50px">Action</th>
             </tr>
             {% for job in job_status.RUNNING %}
             {% if job.job_instance %}
             <tr>
                 <td>{{ job.job_execution_id }}</td>
-                <td><a href="/project/{{ project.id }}/job/periodic#{{ job.job_instance_id }}">{{ job.job_instance_id }}</a></td>
+                <td><a href="/{{ base_prefix }}/project/{{ project.id }}/job/periodic#{{ job.job_instance_id }}">{{ job.job_instance_id }}</a></td>
                 <td>{{ job.job_instance.spider_name }}</td>
                 <td class="txt-args" data-toggle="tooltip" data-placement="right"
                     title="{{ job.job_instance.spider_arguments }}">{{ job.job_instance.spider_arguments }}
@@ -119,12 +120,18 @@
                 {% endif %}
                 <td>{{ timedelta(now,job.start_time) }}</td>
                 <td>{{ job.start_time }}</td>
-                <td><a href="/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/log" target="_blank"
+                <td>
+                    <!--button type="button" class="label label-info" data-toggle="modal"
+                   data-target="#job-run-modal">View
+                    </button-->
+                    <a href="javascript:void(0)" data-toggle="modal" data-target="#counters_view_modal"><span class="label label-info">View</span></a>
+                </td>
+                <td><a href="/{{ base_prefix }}/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/log" target="_blank"
                        data-toggle="tooltip" data-placement="top" title="{{ job.service_job_execution_id }}">Log</a>
                 </td>
                 <td style="font-size: 10px;">{{ job.running_on }}</td>
                 <td>
-                    <a href="/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/stop"><span
+                    <a href="/{{ base_prefix }}/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/stop"><span
                             class="label label-danger">Stop</span></a>
                 </td>
             </tr>
@@ -164,7 +171,7 @@
             {% if job.job_instance %}
             <tr class="{% if job.has_errors %}danger{% elif job.has_warnings %}warning{% endif %}">
                 <td>{{ job.job_execution_id }}</td>
-                <td><a href="/project/{{ project.id }}/job/periodic#{{ job.job_instance_id }}">{{ job.job_instance_id }}</a></td>
+                <td><a href="/{{ base_prefix }}/project/{{ project.id }}/job/periodic#{{ job.job_instance_id }}">{{ job.job_instance_id }}</a></td>
                 <td>{{ job.job_instance.spider_name }}</td>
                 <td class="txt-args" data-toggle="tooltip" data-placement="right"
                     title="{{ job.job_instance.spider_arguments }}">{{ job.job_instance.spider_arguments }}
@@ -192,7 +199,7 @@
                 <td>{{ job.items_count }}</td>
                 <td>{{ job.warnings_count }}</td>
                 <td>{{ job.errors_count }}</td>
-                <td><a href="/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/log" target="_blank"
+                <td><a href="/{{ base_prefix }}/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/log" target="_blank"
                        data-toggle="tooltip" data-placement="top" title="{{ job.service_job_execution_id }}">Log</a>
                 </td>
                 <td>
@@ -201,7 +208,7 @@
                     {% else %}
                         <span class="label label-warning">CANCELED</span>
                     {% endif %}
-                    <a href="/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/remove"><span class="label label-danger">REMOVE</span></a>
+                    <a href="/{{ base_prefix }}/project/{{ project.id }}/jobexecs/{{ job.job_execution_id }}/remove"><span class="label label-danger">REMOVE</span></a>
                 </td>
             </tr>
             {% endif %}
@@ -213,7 +220,7 @@
 <div class="modal fade" role="dialog" id="job-run-modal">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="/project/{{ project.id }}/job/addlist" method="post">
+            <form action="/{{ base_prefix }}/project/{{ project.id }}/job/addlist" method="post">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">×</span></button>
@@ -257,6 +264,25 @@
                     <button type="submit" class="btn btn-primary">Create</button>
                 </div>
             </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+
+<div class="modal fade" role="dialog" id="counters_view_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span></button>
+                <h4 class="modal-title">Spider counters</h4>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Close</button>
+            </div>
         </div>
         <!-- /.modal-content -->
     </div>

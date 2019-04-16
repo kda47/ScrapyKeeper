@@ -54,12 +54,12 @@
                     </tr>
                     {% for job in last_ee %}
                         <tr>
-                            <td><a href="/project/{{ job.project_id }}/jobexecs/{{ job.job_execution_id }}/log" target="_blank">{{ job.job_execution_id }}</a></td>
+                            <td><a href="/{{ base_prefix }}/project/{{ job.project_id }}/jobexecs/{{ job.job_execution_id }}/log" target="_blank">{{ job.job_execution_id }}</a></td>
                             <td>{{ job.job_instance.spider_name }}</td>
                             <td>{{ job.items_count }}</td>
                             <td>{{ job.errors_count }}</td>
                             <td>{{ job.exceptions_count }}</td>
-                            <td><a href="/project/{{ job.project_id }}/jobexecs/{{ job.job_execution_id }}/remove"><span class="label label-danger">REMOVE</span></a></td>
+                            <td><a href="/{{ base_prefix }}/project/{{ job.project_id }}/jobexecs/{{ job.job_execution_id }}/remove"><span class="label label-danger">REMOVE</span></a></td>
                         </tr>
                     {% endfor %}
                 </table>
@@ -79,10 +79,10 @@
 </div>
 {% endblock %}
 {% block script %}
-<script src="/static/js/Chart.min.js"></script>
+<script src="{{ url_for('.static', filename='js/Chart.min.js') }}"></script>
 <script>
-    
-    
+
+
     // - Assign a random color to each spider
     function getRandomColor() {
         var letters = '0123456789ABCDEF';
@@ -92,13 +92,13 @@
         }
         return color;
     }
-    
+
     {% for item in spider %}
     var color{{ item.spider_name }} = getRandomColor();
     {% endfor %}
     var color = Chart.helpers.color;
-    
-    
+
+
     //-------------
     //- POLAR AREA CHART Working Time -
     //-------------

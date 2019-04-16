@@ -1,4 +1,4 @@
-#!/opt/pse/.local/share/virtualenvs/spiderkeeper2-Tf4WTMcJ/bin/python2.7
+#!/opt/pse/venv/scrapykeeper/bin/python2.7
 
 # -*- coding: utf-8 -*-
 import re

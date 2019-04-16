@@ -1,10 +1,14 @@
 # Statement for enabling the development environment
 import os
+from ScrapyKeeper import __version__
 
-DEBUG = True
+DEBUG = False
+
+APP_VERSION = __version__
 
 # Define the application directory
 
+URL_PREFIX="scrapykeeper"
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 

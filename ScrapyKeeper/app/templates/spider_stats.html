@@ -14,7 +14,7 @@
                 <h3 class="box-title">Spider health: {{ last_start_time }}</h3>
             </div>
             <div class="box-body">
-                <script src="/static/js/gauge.min.js"></script>
+                <script src="{{ url_for('.static', filename='js/gauge.min.js') }}"></script>
                 <div class="chart-container">
                     <!-- https://codepen.io/bkmontgomery/pen/MEeyLg -->
                     <canvas data-type="radial-gauge" id="gauge-a"
@@ -102,7 +102,7 @@
 </div>
 {% endblock %}
 {% block script %}
-<script src="/static/js/Chart.min.js"></script>
+<script src="{{ url_for('.static', filename='js/Chart.min.js') }}"></script>
 <script>
     //-------------
     //- LINE CHART Scraped Items AND Requests -

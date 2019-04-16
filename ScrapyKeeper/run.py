@@ -1,3 +1,4 @@
+import setproctitle
 import ConfigParser
 import logging
 import os
@@ -7,6 +8,7 @@ from ScrapyKeeper.app import app, initialize
 
 
 def main():
+    setproctitle.setproctitle("ScrapyKeeper")
     opts, args = parse_opts(app.config)
     auth_from_file = {}
     if opts.auth_file and os.path.exists(opts.auth_file) and os.path.isfile(opts.auth_file):
