@@ -16,7 +16,7 @@ import ScrapyKeeper
 from ScrapyKeeper import config
 
 # Define the WSGI application object
-static_url_path = "/{}/static".format(config.URL_PREFIX)
+static_url_path = "{}/static".format(config.URL_PREFIX)
 
 app = Flask(__name__, static_url_path=static_url_path)
 # Configurations
@@ -33,7 +33,7 @@ app.logger.addHandler(handler)
 
 # swagger
 api = swagger.docs(Api(app), apiVersion=ScrapyKeeper.__version__,
-                   api_spec_url="/{}/api".format(config.URL_PREFIX),
+                   api_spec_url="{}/api".format(config.URL_PREFIX),
                    description='ScrapyKeeper')
 # Define the database object which is imported
 # by modules and controllers
