@@ -8,7 +8,7 @@ APP_VERSION = __version__
 
 # Define the application directory
 
-URL_PREFIX="/scrapykeeper"
+URL_PREFIX=os.environ.get("APP_URL_PREFIX", "/scrapykeeper")
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
