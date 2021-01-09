@@ -37,12 +37,12 @@ LOG_LEVEL = 'INFO'
 
 # spider services
 SERVER_TYPE = 'scrapyd'
-SERVERS = ['http://localhost:6800']
+SERVERS = [os.environ.get("APP_SCRAPYD_ADDR", 'http://localhost:6800')]
 
 # basic auth
-NO_AUTH = False
+NO_AUTH = True if "APP_NO_AUTH" in os.environ else False
 BASIC_AUTH_USERNAME = 'admin'
 BASIC_AUTH_PASSWORD = 'admin'
 BASIC_AUTH_FORCE = True
 
-NO_SENTRY = False
+NO_SENTRY = True if "APP_NO_SENTRY" in os.environ else False
