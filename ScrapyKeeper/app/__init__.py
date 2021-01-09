@@ -11,6 +11,20 @@ from flask_restful import Api
 from flask_restful_swagger import swagger
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.exceptions import HTTPException
+try:
+    from werkzeug.middleware.proxy_fix import ProxyFix
+except ImportError:
+    class ProxyFix(object):
+        def __init__(self, app, **kwargs):
+            self.app = app
+
+        def __call__(self, environ, start_response):
+            # if one of x_forwarded or preferred_url is https, prefer it.
+            forwarded_scheme = environ.get("HTTP_X_FORWARDED_PROTO", None)
+            preferred_scheme = app.config.get("PREFERRED_URL_SCHEME", None)
+            if "https" in [forwarded_scheme, preferred_scheme]:
+                environ["wsgi.url_scheme"] = "https"
+            return self.app(environ, start_response)
 
 import ScrapyKeeper
 from ScrapyKeeper import config
@@ -19,6 +33,7 @@ from ScrapyKeeper import config
 static_url_path = "{}/static".format(config.URL_PREFIX)
 
 app = Flask(__name__, static_url_path=static_url_path)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 # Configurations
 app.config.from_object(config)
 
