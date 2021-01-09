@@ -6,6 +6,9 @@
 you can start the server by uwsgi
 like gunicorn -w 4 ScrapyKeeper.uwsgi:app
 '''
+import warnings
+warnings.filterwarnings("ignore", message="Importing flask.ext.restful") 
+
 from ScrapyKeeper.app import app, initialize
 
 initialize()
